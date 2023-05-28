@@ -106,140 +106,135 @@ const getAllBeers=()=>{
       }
     ]);}
 
-
     const getTotalPrice = (code) => {
       const price = selectedBeers.map((beer) => beer.price).reduce((a, b) => a + b, 0);
-      
+  
       if (code === null) {
-        return price
+        return Number(price).toFixed(2);
       } else if (code === 'BREW15') {
-        return price * 0.25;
+        return Number(price * 0.25).toFixed(2);
       } else if (code === 'BREW50') {
-        return price * 0.50;
+        return Number(price * 0.50).toFixed(2);
       }
+    };
+  
+
+    //learnt this random number method from chatgpt 
+    const getRandomBeer = () => {
+      fetch('https://api.punkapi.com/v2/beers/random')
+        .then((res) => res.json())
+        .then((data) => {
+          const randomPrice = Number((Math.random() * (5 - 3) + 3).toFixed(2));
+          const beerWithPrice = { ...data[0], price: randomPrice};
+          setBeer(beerWithPrice);
+          setIsSaved(false);
+        });
     };
     
-
-const getRandomBeer = (beers) => {
-  const randomIndex = Math.floor(Math.random() * beers.length);
-  return beers[randomIndex];
-};
-
   
-const getBeer = () => {
-        setBeer(getRandomBeer(allBeers));
-        setIsSaved(false);
-      };
+    useEffect(() => {
+      getRandomBeer();
+      getAllBeers();
+    }, []);
   
-  
-
-  useEffect(() =>{getBeer()},[]);
-  useEffect(()=>{getAllBeers()},[]);
-
-
-
-  //showmore belongs to info button. onclick, set showinfo to true, triggers BeerInfo component to showup. 
-  // ChatGPT: if the showInfo property is initially not present in the beer object, the code in the showMore function will add it with a value of true when the function is called for the first time. Subsequent calls to the showMore function for the same beer object will toggle the value of showInfo between true and false.
-
-  // In summary, the showMore function dynamically adds the showInfo property to the beer object if it doesn't exist and toggles its value each time the function is called.
-  const showMore = (beerId) => {
-  setSelectedBeers((prevState) => {
-    return prevState.map((beer) => {
-      if (beer.id === beerId) {
-        return { ...beer, showInfo: !beer.showInfo };
-      }
-      return beer;
-    });
-  });
-  setShowInfo((pre)=>!pre);
-};
-
-  
-  
-
- 
-    const saveSelected = (beerId) => {
-      const selectedBeer = allBeers.find((beer) => beer.id === beerId)||beer.id===beerId;
-      const isNewBeer = selectedBeers.some((selectedBeer) => selectedBeer.id === beerId);
-      const changeSaveButton=()=>{
-        isNewBeer?setIsSaved(true):setIsSaved(false);}
-      
-        setSelectedBeers([...selectedBeers, selectedBeer]);
-        changeSaveButton();
-
-
+    const showMore = (beerId) => {
+      setSelectedBeers((prevState) =>
+        prevState.map((beer) => {
+          if (beer.id === beerId) {
+            return { ...beer, showInfo: !beer.showInfo };
+          }
+          return beer;
+        })
+      );
+      setShowInfo((prev) => !prev);
     };
-
+  
+    const saveSelected = (beerId) => {
+      const selectedBeer = allBeers.find((beer) => beer.id === beerId) || beer.id === beerId;
+      const isNewBeer = selectedBeers.some((selectedBeer) => selectedBeer.id === beerId);
+  
+      setSelectedBeers((prevState) => [...prevState, selectedBeer]);
+      setIsSaved(!isNewBeer);
+    };
+  
     const saveRandom = () => {
       const notNewBeer = selectedBeers.some((selectedBeer) => selectedBeer.id === beer.id);
       if (!notNewBeer) {
-        setSelectedBeers([...selectedBeers, beer]);
-        setIsSaved(true); 
+        setSelectedBeers((prevState) => [...prevState, beer]);
+        setIsSaved(true);
       }
     };
-    
-    
   
-  const removeBeer = (beerId) => {
-    setSelectedBeers((prevState) => prevState.filter((beer) => beer.id !== beerId));
-  };
-
-// to check food in food pairing
-  const handleInput = (food) => {
-    const filteredBeers = allBeers.filter((beer) => {
-      return beer.food_pairing.some((paired_food) => paired_food.toLowerCase().includes(food.toLowerCase()));
-    });
+    const removeBeer = (beerId) => {
+      setSelectedBeers((prevState) => prevState.filter((beer) => beer.id !== beerId));
+    };
   
-    setFilteredBeers(filteredBeers);
-  };
+    const handleInput = (food) => {
+      const filteredBeers = allBeers.filter((beer) =>
+        beer.food_pairing.some((paired_food) => paired_food.toLowerCase().includes(food.toLowerCase()))
+      );
   
+      setFilteredBeers(filteredBeers);
+    };
   
-
-
-  return (
-    <div className="App" style={{ backgroundImage: `url('./beer1.jpg')` }}>
-      <Router>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Home  selectedBeers={selectedBeers} removeBeer={removeBeer}/>} />
-
-          <Route
-                  path="/randomBeer"
-                  element={
-                    <BeerRandom
-                      beer={beer}
-                      getBeer={getBeer}
-                      selectedBeers={selectedBeers}
-                      isSaved={isSaved}
-                      showInfo={showInfo}
-                      saveRandom={saveRandom}
-                    />}/>
-
-     <Route path="/filterBeer" element={<FilterBeer allBeers={allBeers} handleInput={handleInput} filteredBeers={filteredBeers}  showMore={showMore} saveSelected={saveSelected} showInfo={showInfo} isSaved={isSaved} beer={beer} />} />
- 
-     <Route
-  path="/basket"
-  element={
-    selectedBeers ? (
-      <WishList selectedBeers={selectedBeers}  removeBeer={removeBeer} showMore={showMore} showInfo={showInfo}/>
-    ) : null
+    return (
+      <div className="App" style={{ backgroundImage: `url('./beer1.jpg')` }}>
+        <Router>
+          <NavBar />
+          <Routes>
+            <Route path="/" element={<Home selectedBeers={selectedBeers} removeBeer={removeBeer} />} />
+            <Route
+              path="/randomBeer"
+              element={
+                <BeerRandom
+                  beer={beer}
+                  getBeer={getRandomBeer}
+                  selectedBeers={selectedBeers}
+                  isSaved={isSaved}
+                  showInfo={showInfo}
+                  saveRandom={saveRandom}
+                />
+              }
+            />
+            <Route
+              path="/filterBeer"
+              element={
+                <FilterBeer
+                  allBeers={allBeers}
+                  handleInput={handleInput}
+                  filteredBeers={filteredBeers}
+                  showMore={showMore}
+                  saveSelected={saveSelected}
+                  showInfo={showInfo}
+                  isSaved={isSaved}
+                  beer={beer}
+                />
+              }
+            />
+            <Route
+              path="/basket"
+              element={selectedBeers ? <WishList selectedBeers={selectedBeers} removeBeer={removeBeer} showMore={showMore} showInfo={showInfo} /> : null}
+            />
+            <Route
+              path="/checkout"
+              element={selectedBeers ? <CheckOut selectedBeers={selectedBeers} getTotalPrice={getTotalPrice} /> : null}
+            />
+          </Routes>
+        </Router>
+      </div>
+    );
   }
-/>
+  
+  export default App;
 
-<Route
-  path="/checkout"
-  element={
-    selectedBeers ? (
-      <CheckOut selectedBeers={selectedBeers} getTotalPrice={getTotalPrice}/>
-    ) : null
-  }
-/>
+// const getRandomBeer = (beers) => {
+//   const randomIndex = Math.floor(Math.random() * beers.length);
+//   return beers[randomIndex];
+// };
 
-        </Routes>
-      </Router>
-    </div>
-  );
-}
-
-export default App;
-
+  
+// const getBeer = () => {
+//         setBeer(getRandomBeer(allBeers));
+//         setIsSaved(false);
+//       };
+  

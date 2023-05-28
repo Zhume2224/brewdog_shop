@@ -26,6 +26,7 @@ const FilterBeer = ({ allBeers, handleInput, filteredBeers, showMore, showInfo, 
             {filteredBeers.map((beer) => (
               <li key={beer.id} id={beer.id}>
                 {beer.name}
+                Price£:{beer.price}
                 <img src={beer.image_url} alt={beer.name} style={{ width: '200px', height: '300px' }} />
                 <Buttons showMore={()=>{showMore(beer.id)}} saveSelected={()=>saveSelected(beer.id)} showInfo={showInfo} isSaved={isSaved} />
                 {showInfo && <BeerInfo beer={beer} showInfo={showInfo} />}

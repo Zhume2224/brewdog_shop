@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 const CheckOut = ({ selectedBeers, getTotalPrice }) => {
   const [voucherCode, setVoucherCode] = useState('');
   const [totalPrice, setTotalPrice] = useState(getTotalPrice(null));
+  //to add:voucher update state.
 
   const handleChange = (event) => {
     setVoucherCode(event.target.value);
