@@ -10,6 +10,7 @@ import FilterBeer from './components/FilterBeer'
 import BeerRandom from './components/BeerRandom';
 import BeerInfo from './components/BeerInfo';
 import Buttons from './components/Buttons'; 
+import CheckOut from './components/CheckOut';
 
 
 
@@ -20,6 +21,7 @@ function App() {
   const [isSaved, setIsSaved] = useState(false);
   const [allBeers,setAllBeers]=useState([]);
   const [filteredBeers,setFilteredBeers]=useState([]);
+ 
 
 
 const getAllBeers=()=>{
@@ -105,7 +107,18 @@ const getAllBeers=()=>{
     ]);}
 
 
-
+    const getTotalPrice = (code) => {
+      const price = selectedBeers.map((beer) => beer.price).reduce((a, b) => a + b, 0);
+      
+      if (code === null) {
+        return price
+      } else if (code === 'BREW15') {
+        return price * 0.25;
+      } else if (code === 'BREW50') {
+        return price * 0.50;
+      }
+    };
+    
 
 const getRandomBeer = (beers) => {
   const randomIndex = Math.floor(Math.random() * beers.length);
@@ -191,20 +204,16 @@ const getBeer = () => {
           <Route path="/" element={<Home  selectedBeers={selectedBeers} removeBeer={removeBeer}/>} />
 
           <Route
-            path="/randomBeer"
-            element={
-              <BeerRandom
-                beer={beer}
-                getBeer={getBeer}
-                selectedBeers={selectedBeers}
-                isSaved={isSaved}
-                showInfo={showInfo}
-                saveRandom={saveRandom}
-              />
-            }
-          />
-
-
+                  path="/randomBeer"
+                  element={
+                    <BeerRandom
+                      beer={beer}
+                      getBeer={getBeer}
+                      selectedBeers={selectedBeers}
+                      isSaved={isSaved}
+                      showInfo={showInfo}
+                      saveRandom={saveRandom}
+                    />}/>
 
      <Route path="/filterBeer" element={<FilterBeer allBeers={allBeers} handleInput={handleInput} filteredBeers={filteredBeers}  showMore={showMore} saveSelected={saveSelected} showInfo={showInfo} isSaved={isSaved} beer={beer} />} />
  
@@ -217,11 +226,20 @@ const getBeer = () => {
   }
 />
 
+<Route
+  path="/checkout"
+  element={
+    selectedBeers ? (
+      <CheckOut selectedBeers={selectedBeers} getTotalPrice={getTotalPrice}/>
+    ) : null
+  }
+/>
+
         </Routes>
       </Router>
     </div>
   );
 }
 
-export default App
+export default App;
 
