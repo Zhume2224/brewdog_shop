@@ -1,0 +1,9 @@
+
+.App {
+  text-align: center;
+  background-image: url('./beer1.jpg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
