@@ -1,6 +1,7 @@
 import React from 'react';
 import BeerInfo from './BeerInfo';
 import {Link} from "react-router-dom"
+//this is related to basket. 
 
 const WishList = ({ selectedBeers, removeBeer, showMore }) => {
   return (
@@ -17,6 +18,8 @@ const WishList = ({ selectedBeers, removeBeer, showMore }) => {
             {beer.showInfo ? 'Hide Info' : 'More Info'}
           </button>
           {beer.showInfo && <BeerInfo beer={beer} showInfo={beer.showInfo} />}
+          
+
         </div>
       ))}
     </>

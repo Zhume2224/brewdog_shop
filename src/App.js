@@ -15,97 +15,16 @@ import CheckOut from './components/CheckOut';
 
 
 function App() {
-  const [beer, setBeer] = useState(null);  
-  const [showInfo, setShowInfo] = useState(false);
-  const [selectedBeers, setSelectedBeers] = useState([]);
+  const [beer, setBeer] = useState(null);  //for random beer
+  const [showInfo, setShowInfo] = useState(false);//for more info button
   const [isSaved, setIsSaved] = useState(false);
+  const [selectedBeers, setSelectedBeers] = useState([]); 
   const [allBeers,setAllBeers]=useState([]);
   const [filteredBeers,setFilteredBeers]=useState([]);
  
 
 
-const getAllBeers=()=>{
-  setAllBeers([
-      {
-        "id": 84,
-        "name": "Stout Supreme",
-        "description": "A rich and velvety stout with notes of chocolate and coffee.",
-        "food_pairing": [
-          "Grilled steak",
-          "Dark chocolate cake",
-          "Vanilla ice cream"
-        ],
-        "abv": 7.5,
-        "image_url": "https://images.punkapi.com/v2/84.png",
-        "price": 7.99
-      },
-      {
-        "id": 85,
-        "name": "Hoppy IPA",
-        "description": "An intense IPA with a strong hop aroma and citrusy flavors.",
-        "food_pairing": [
-          "Spicy Thai curry",
-          "Grilled pineapple",
-          "Ginger cookies"
-        ],
-        "abv": 6.8,
-        "image_url": "https://images.punkapi.com/v2/85.png",
-        "price": 5.99
-      },
-      {
-        "id": 86,
-        "name": "Wheat Ale",
-        "description": "A refreshing wheat ale with hints of banana and clove.",
-        "food_pairing": [
-          "Grilled fish tacos",
-          "Fruit salad",
-          "Lemon meringue pie"
-        ],
-        "abv": 5.2,
-        "image_url": "https://images.punkapi.com/v2/86.png",
-        "price": 6.49
-      },
-      {
-        "id": 81,
-        "name": "India Session Lager - Prototype Challenge",
-        "description": "A refreshing and hoppy session lager with a crisp taste.",
-        "food_pairing": [
-          "Tomato and onion palmiers",
-          "Bratwurst with sauerkraut",
-          "Lemon drizzle cake"
-        ],
-        "abv": 4.4,
-        "image_url": "https://images.punkapi.com/v2/keg.png",
-        "price": 4.99
-      },
-      {
-        "id": 83,
-        "name": "American Pale Ale",
-        "description": "A classic American-style pale ale with a citrusy hop aroma.",
-        "food_pairing": [
-          "Spicy grilled chicken wings",
-          "Barbecue ribs",
-          "Citrus fish"
-        ],
-        "abv": 5.6,
-        "image_url": "https://images.punkapi.com/v2/keg.png",
-        "price": 5.49
-      },
-      {
-        "id": 82,
-        "name": "Pilsen Lager",
-        "description": "A traditional European-style pilsner with a clean and crisp flavor.",
-        "food_pairing": [
-          "Grilled shrimp skewers",
-          "lamb schnitzel",
-          "Cheesecake with fruit topping"
-        ],
-        "abv": 6.3,
-        "image_url": "https://images.punkapi.com/v2/2.png",
-        "price": 6.99
-      }
-    ]);}
-
+//for basket
     const getTotalPrice = (code) => {
       const price = selectedBeers.map((beer) => beer.price).reduce((a, b) => a + b, 0);
   
@@ -119,7 +38,7 @@ const getAllBeers=()=>{
     };
   
 
-    //learnt this random number method from chatgpt 
+    //for BeerRandom
     const getRandomBeer = () => {
       fetch('https://api.punkapi.com/v2/beers/random')
         .then((res) => res.json())
@@ -131,12 +50,29 @@ const getAllBeers=()=>{
         });
     };
     
-  
+    //for FilterBeer
+    const getAllBeers = () => {
+    const promises=[1,2].map((number)=>{
+      return fetch(`https://api.punkapi.com/v2/beers?page=${number}&per_page=80`).then((res)=>res.json());
+    });
+    Promise.all(promises).then((data)=>{
+      const combinedResponses=data.flat();
+      const beersWithPrice=combinedResponses.map((beer)=>{
+        const ramdomPrice=Number((Math.random()*(5-3)+3).toFixed(2));
+        return { ...beer, price: ramdomPrice,showInfo:false};
+      });
+      setAllBeers( beersWithPrice );
+      console.log('this is allBeers:', allBeers)
+      setIsSaved ( false )
+      })};
+    
     useEffect(() => {
       getRandomBeer();
       getAllBeers();
     }, []);
-  
+
+ 
+
     const showMore = (beerId) => {
       setSelectedBeers((prevState) =>
         prevState.map((beer) => {
@@ -146,16 +82,21 @@ const getAllBeers=()=>{
           return beer;
         })
       );
-      setShowInfo((prev) => !prev);
+      // return {showInfo: !beer.showInfo };
+
+      // setShowInfo((prev) => !prev);
     };
   
+    //save selected filtered beer
     const saveSelected = (beerId) => {
-      const selectedBeer = allBeers.find((beer) => beer.id === beerId) || beer.id === beerId;
-      const isNewBeer = selectedBeers.some((selectedBeer) => selectedBeer.id === beerId);
-  
-      setSelectedBeers((prevState) => [...prevState, selectedBeer]);
-      setIsSaved(!isNewBeer);
+      const beerToSave = allBeers.find((beer) => beer.id === beerId);
+      if (beerToSave) {
+        setSelectedBeers([...selectedBeers, beerToSave]);
+      }
     };
+    
+    
+    
   
     const saveRandom = () => {
       const notNewBeer = selectedBeers.some((selectedBeer) => selectedBeer.id === beer.id);
@@ -165,6 +106,8 @@ const getAllBeers=()=>{
       }
     };
   
+
+    // to remove items in basket
     const removeBeer = (beerId) => {
       setSelectedBeers((prevState) => prevState.filter((beer) => beer.id !== beerId));
     };
@@ -176,6 +119,26 @@ const getAllBeers=()=>{
   
       setFilteredBeers(filteredBeers);
     };
+    // console.log('this is fltered beers',filteredBeers)
+     // fix button for filtered beers
+
+
+//for showing more info in filter beers
+     const showFilteredBeer = (beerId) => {
+      setFilteredBeers((prevState) =>
+        prevState.map((beer) => {
+          if (beer.id === beerId) {
+            return { ...beer, showInfo: !beer.showInfo };
+          }
+          return beer;
+        })
+      );
+    };
+    
+
+
+
+
   
     return (
       <div className="App" style={{ backgroundImage: `url('./beer1.jpg')` }}>
@@ -187,6 +150,7 @@ const getAllBeers=()=>{
               path="/randomBeer"
               element={
                 <BeerRandom
+
                   beer={beer}
                   getBeer={getRandomBeer}
                   selectedBeers={selectedBeers}
@@ -200,6 +164,7 @@ const getAllBeers=()=>{
               path="/filterBeer"
               element={
                 <FilterBeer
+                showFilteredBeer={showFilteredBeer}
                   allBeers={allBeers}
                   handleInput={handleInput}
                   filteredBeers={filteredBeers}
@@ -227,14 +192,85 @@ const getAllBeers=()=>{
   
   export default App;
 
-// const getRandomBeer = (beers) => {
-//   const randomIndex = Math.floor(Math.random() * beers.length);
-//   return beers[randomIndex];
-// };
-
-  
-// const getBeer = () => {
-//         setBeer(getRandomBeer(allBeers));
-//         setIsSaved(false);
-//       };
-  
+//below code is used when api is restricted.
+// const getAllBeers=()=>{
+//   setAllBeers([
+//       {
+//         "id": 84,
+//         "name": "Stout Supreme",
+//         "description": "A rich and velvety stout with notes of chocolate and coffee.",
+//         "food_pairing": [
+//           "Grilled steak",
+//           "Dark chocolate cake",
+//           "Vanilla ice cream"
+//         ],
+//         "abv": 7.5,
+//         "image_url": "https://images.punkapi.com/v2/84.png",
+//         "price": 7.99
+//       },
+//       {
+//         "id": 85,
+//         "name": "Hoppy IPA",
+//         "description": "An intense IPA with a strong hop aroma and citrusy flavors.",
+//         "food_pairing": [
+//           "Spicy Thai curry",
+//           "Grilled pineapple",
+//           "Ginger cookies"
+//         ],
+//         "abv": 6.8,
+//         "image_url": "https://images.punkapi.com/v2/85.png",
+//         "price": 5.99
+//       },
+//       {
+//         "id": 86,
+//         "name": "Wheat Ale",
+//         "description": "A refreshing wheat ale with hints of banana and clove.",
+//         "food_pairing": [
+//           "Grilled fish tacos",
+//           "Fruit salad",
+//           "Lemon meringue pie"
+//         ],
+//         "abv": 5.2,
+//         "image_url": "https://images.punkapi.com/v2/86.png",
+//         "price": 6.49
+//       },
+//       {
+//         "id": 81,
+//         "name": "India Session Lager - Prototype Challenge",
+//         "description": "A refreshing and hoppy session lager with a crisp taste.",
+//         "food_pairing": [
+//           "Tomato and onion palmiers",
+//           "Bratwurst with sauerkraut",
+//           "Lemon drizzle cake"
+//         ],
+//         "abv": 4.4,
+//         "image_url": "https://images.punkapi.com/v2/keg.png",
+//         "price": 4.99
+//       },
+//       {
+//         "id": 83,
+//         "name": "American Pale Ale",
+//         "description": "A classic American-style pale ale with a citrusy hop aroma.",
+//         "food_pairing": [
+//           "Spicy grilled chicken wings",
+//           "Barbecue ribs",
+//           "Citrus fish"
+//         ],
+//         "abv": 5.6,
+//         "image_url": "https://images.punkapi.com/v2/keg.png",
+//         "price": 5.49
+//       },
+//       {
+//         "id": 82,
+//         "name": "Pilsen Lager",
+//         "description": "A traditional European-style pilsner with a clean and crisp flavor.",
+//         "food_pairing": [
+//           "Grilled shrimp skewers",
+//           "lamb schnitzel",
+//           "Cheesecake with fruit topping"
+//         ],
+//         "abv": 6.3,
+//         "image_url": "https://images.punkapi.com/v2/2.png",
+//         "price": 6.99
+//       }
+//     ]);}

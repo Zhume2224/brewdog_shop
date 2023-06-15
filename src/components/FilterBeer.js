@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import Buttons from './Buttons';
+// import Buttons from './Buttons';
 import BeerInfo from './BeerInfo';
 
-const FilterBeer = ({ allBeers, handleInput, filteredBeers, showMore, showInfo, saveSelected, isSaved, beer }) => {
+const FilterBeer = ({showFilteredBeer,saveRandom, allBeers, handleInput, filteredBeers, showMore, showInfo, saveSelected, isSaved, beer }) => {
   const [food, setFood] = useState('');
 
   const handleChange = (e) => {
@@ -26,10 +26,16 @@ const FilterBeer = ({ allBeers, handleInput, filteredBeers, showMore, showInfo, 
             {filteredBeers.map((beer) => (
               <li key={beer.id} id={beer.id}>
                 {beer.name}
-                Price£:{beer.price}
+                <p>Price:£{beer.price}</p>
+                <br/>
                 <img src={beer.image_url} alt={beer.name} style={{ width: '200px', height: '300px' }} />
-                <Buttons showMore={()=>{showMore(beer.id)}} saveSelected={()=>saveSelected(beer.id)} showInfo={showInfo} isSaved={isSaved} />
-                {showInfo && <BeerInfo beer={beer} showInfo={showInfo} />}
+                {/* fixing buttons */}
+                <button className="info" onClick={() => showFilteredBeer(beer.id)}> {beer.showInfo ? 'Hide Info' : 'More Info'}
+          </button>
+                <button className="beer-save" onClick={()=>{saveSelected(beer.id)}}> {isSaved ? 'Saved' : 'Save'}
+            </button>
+                 {beer.showInfo && <BeerInfo beer={beer} showInfo={showInfo} />}
+            
               </li>
             ))}
           </ul>

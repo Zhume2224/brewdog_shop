@@ -3,7 +3,7 @@ import React from 'react';
 const BeerInfo = ({ beer, showInfo }) => {
   return (
     <>
-      {showInfo && (
+      {/* {showInfo && ( */}
         <div key={beer.id} id={beer.id}>
           <h3>Description:</h3>
           <p>{beer.description}</p>
@@ -11,7 +11,7 @@ const BeerInfo = ({ beer, showInfo }) => {
           <p>{beer.food_pairing.join(', ')}</p>  
           </div>   
       
-      )}
+      {/* )} */}
     </>
   );
 };

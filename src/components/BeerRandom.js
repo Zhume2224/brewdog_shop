@@ -11,7 +11,8 @@ const BeerRandom = ({ beer, getBeer, saveRandom, showInfo, isSaved, selectedBeer
               Any Beer
             </button>
             <button className="beer-save" onClick={saveRandom}>
-              {isSaved ? 'Saved' : 'Save'}
+            save
+              {/* {isSaved ? 'Saved' : 'Save'} */}
             </button>
             
           </div>
