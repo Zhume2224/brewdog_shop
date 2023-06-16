@@ -12,7 +12,7 @@ const BeerRandom = ({ beer, getBeer, saveRandom, showInfo, isSaved, selectedBeer
             </button>
             <button className="beer-save" onClick={saveRandom}>
             save
-              {/* {isSaved ? 'Saved' : 'Save'} */}
+            
             </button>
             
           </div>
@@ -24,7 +24,7 @@ const BeerRandom = ({ beer, getBeer, saveRandom, showInfo, isSaved, selectedBeer
             <p>Food Pairing:{beer.food_pairing.join(",")}</p>
 
           </div>
-          {showInfo && <BeerInfo beer={beer} showInfo={showInfo} />}
+          {showInfo && <BeerInfo beer={beer} />}
         </>
       )}
     </>

@@ -15,7 +15,7 @@ const Home = ( {selectedBeers, removeBeer}) => {
       <div className="helpMe">
         <h2>Help Me</h2>
         <button className="filterbeer">
-        <Link to="/help">💟</Link>
+        <Link to="/filterBeer">💟</Link>
         </button>
       </div>
       {/* <WishList selectedBeers={selectedBeers} removeBeer={removeBeer} />  */}
