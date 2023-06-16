@@ -17,7 +17,7 @@ const WishList = ({ selectedBeers, removeBeer, showMore }) => {
           <button className="beer-info" onClick={() => showMore(beer.id)}>
             {beer.showInfo ? 'Hide Info' : 'More Info'}
           </button>
-          {beer.showInfo && <BeerInfo beer={beer} showInfo={beer.showInfo} />}
+          {beer.showInfo && <BeerInfo beer={beer}/>}
           
 
         </div>

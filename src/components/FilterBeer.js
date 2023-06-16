@@ -34,7 +34,7 @@ const FilterBeer = ({showFilteredBeer,saveRandom, allBeers, handleInput, filtere
           </button>
                 <button className="beer-save" onClick={()=>{saveSelected(beer.id)}}> {isSaved ? 'Saved' : 'Save'}
             </button>
-                 {beer.showInfo && <BeerInfo beer={beer} showInfo={showInfo} />}
+                 {beer.showInfo && <BeerInfo beer={beer} />}
             
               </li>
             ))}
