@@ -17,7 +17,7 @@ import CheckOut from './components/CheckOut';
 function App() {
   const [beer, setBeer] = useState(null);  //for random beer
   const [showInfo, setShowInfo] = useState(false);//for more info button
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(0);
   const [selectedBeers, setSelectedBeers] = useState([]); 
   const [allBeers,setAllBeers]=useState([]);
   const [filteredBeers,setFilteredBeers]=useState([]);
@@ -46,7 +46,6 @@ function App() {
           const randomPrice = Number((Math.random() * (5 - 3) + 3).toFixed(2));
           const beerWithPrice = { ...data[0], price: randomPrice};
           setBeer(beerWithPrice);
-          setIsSaved(false);
         });
     };
     
@@ -70,6 +69,8 @@ function App() {
       getRandomBeer();
       getAllBeers();
     }, []);
+    // useEffect(()=>{
+    //   setSelectedBeers()},removeBeer())
 
  
 
@@ -82,9 +83,7 @@ function App() {
           return beer;
         })
       );
-      // return {showInfo: !beer.showInfo };
-
-      // setShowInfo((prev) => !prev);
+     
     };
   
     //save selected filtered beer
@@ -99,18 +98,27 @@ function App() {
     
   
     const saveRandom = () => {
-      const notNewBeer = selectedBeers.some((selectedBeer) => selectedBeer.id === beer.id);
-      if (!notNewBeer) {
         setSelectedBeers((prevState) => [...prevState, beer]);
-        setIsSaved(true);
-      }
-    };
+        // refactory below:
+        setIsSaved(isSaved+=1);
+      };
   
 
-    // to remove items in basket
+    // to remove items in basket, only remove one a time
     const removeBeer = (beerId) => {
-      setSelectedBeers((prevState) => prevState.filter((beer) => beer.id !== beerId));
-    };
+      setSelectedBeers((prevState) => {
+        const indexOfFirstDupBeer = prevState.findIndex((beer) => beer.id === beerId);
+        if (indexOfFirstDupBeer !== -1) {
+          const copyOfSelectedBeers = [...prevState];
+          copyOfSelectedBeers.splice(indexOfFirstDupBeer, 1);
+          setIsSaved(prevIsSaved => prevIsSaved - 1)
+          return copyOfSelectedBeers;
+        }
+        return prevState;
+      });
+    }
+    // .then(()=>{setSelectedBeers(selectedBeers=>selectedBeers)})
+    
   
     const handleInput = (food) => {
       const filteredBeers = allBeers.filter((beer) =>
@@ -178,7 +186,7 @@ function App() {
             />
             <Route
               path="/basket"
-              element={selectedBeers ? <WishList selectedBeers={selectedBeers} removeBeer={removeBeer} showMore={showMore} showInfo={showInfo} /> : null}
+              element={selectedBeers.length>0 ? <WishList selectedBeers={selectedBeers} removeBeer={removeBeer} showMore={showMore} showInfo={showInfo} /> : null}
             />
             <Route
               path="/checkout"

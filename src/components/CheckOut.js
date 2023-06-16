@@ -19,7 +19,7 @@ const CheckOut = ({ selectedBeers, getTotalPrice }) => {
       <div>
         Ordered Items:
         {selectedBeers.map((beer) => {
-          return <li key={beer.id}>{beer.name}</li>;
+          return <li className='price-list' key={beer.id}>{beer.name}: £{beer.price}</li>;
         })}
         Any Voucher? (current code1: BREW15; code2: BREW50;)
         <input

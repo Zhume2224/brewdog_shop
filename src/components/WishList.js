@@ -29,5 +29,6 @@ const WishList = ({ selectedBeers, removeBeer, showMore }) => {
 
 export default WishList;
 
+{/* <div key={Date.now()} id={Date.now()}> */}
 
 
